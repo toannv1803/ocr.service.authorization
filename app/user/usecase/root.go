@@ -3,10 +3,12 @@ package UserUseCase
 import (
 	"errors"
 	"github.com/google/uuid"
+	"github.com/jinzhu/copier"
 	UserInterface "ocr.service.authorization/app/user/interface"
 	UserRepository "ocr.service.authorization/app/user/repository"
 	"ocr.service.authorization/model"
 	"ocr.service.authorization/module/salt"
+	"time"
 )
 
 type userUseCase struct {
@@ -14,14 +16,19 @@ type userUseCase struct {
 }
 
 var nullUser = model.User{}
+var nullUserResponse = model.UserResponse{}
 
-func (q *userUseCase) GetByOwner(user model.User) (model.User, error) {
+func (q *userUseCase) GetByOwner(user model.User) (model.UserResponse, error) {
+	var userResponse model.UserResponse
 	user, err := q.GetFull(user)
 	if err != nil {
-		return nullUser, err
+		return nullUserResponse, err
 	}
-	user.Password = ""
-	return user, nil
+	err = copier.Copy(&userResponse, &user)
+	if err != nil {
+		return nullUserResponse, err
+	}
+	return userResponse, nil
 }
 
 func (q *userUseCase) GetFull(user model.User) (model.User, error) {
@@ -35,28 +42,34 @@ func (q *userUseCase) GetFull(user model.User) (model.User, error) {
 	return arrUser[0], nil
 }
 
-func (q *userUseCase) Create(user model.User) (model.User, error) {
+func (q *userUseCase) Create(user model.User) (model.UserResponse, error) {
 	_uuid := uuid.New().String()
 	user.Id = _uuid
 	user.Roles = "user"
 	user.Password = salt.HashAndSalt([]byte(user.Password))
+	user.CreateAt = time.Now().Format(time.RFC3339)
 	arrUser, err := q.repository.Get(model.User{Username: user.Username})
 	if err != nil {
-		return nullUser, errors.New("get from db failed")
+		return nullUserResponse, errors.New("get from db failed")
 	}
 	if len(arrUser) == 0 {
 		_, err := q.repository.InsertOne(user)
 		if err != nil {
-			return nullUser, errors.New("insert to db failed")
+			return nullUserResponse, errors.New("insert to db failed")
 		}
 	} else {
-		return nullUser, errors.New("username already exists")
+		return nullUserResponse, errors.New("username already exists")
 	}
-	user.Password = ""
-	return user, nil
+	var userResponse model.UserResponse
+	err = copier.Copy(&userResponse, &user)
+	if err != nil {
+		return nullUserResponse, err
+	}
+	return userResponse, nil
 }
 
 func (q *userUseCase) Update(userId string, user model.User) error {
+	user.Password = salt.HashAndSalt([]byte(user.Password))
 	modifiedCount, err := q.repository.Update(model.User{Id: userId}, user)
 	if err != nil {
 		return errors.New("update user failed")

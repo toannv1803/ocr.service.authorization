@@ -1,0 +1,144 @@
+definitions:
+  model.LoginResponse:
+    properties:
+      code:
+        type: integer
+      expire:
+        type: string
+      token:
+        type: string
+      user_id:
+        type: string
+    type: object
+  model.UserCreate:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+      username:
+        type: string
+    type: object
+  model.UserLogin:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  model.UserResponse:
+    properties:
+      create_at:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      phone_number:
+        type: string
+      username:
+        type: string
+    type: object
+  model.UserUpdate:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+    type: object
+info:
+  contact: {}
+  license: {}
+  title: OCR AUTHORIZATION API
+  version: "1.0"
+paths:
+  /api/v1/auth/user/{user_id}:
+    get:
+      description: create user
+      parameters:
+      - description: user id
+        in: path
+        name: user_id
+        type: string
+      - description: '''Bearer '' + token'
+        in: header
+        name: Authorization
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+      summary: user
+      tags:
+      - User
+    post:
+      description: create user
+      parameters:
+      - description: user id
+        in: path
+        name: user_id
+        type: string
+      - description: '''Bearer '' + token'
+        in: header
+        name: Authorization
+        type: string
+      - description: json
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserUpdate'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+      summary: user
+      tags:
+      - User
+  /api/v1/login:
+    post:
+      description: create user
+      parameters:
+      - description: json
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLogin'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LoginResponse'
+      summary: user login
+      tags:
+      - User
+  /api/v1/register:
+    post:
+      description: create user
+      parameters:
+      - description: json
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserCreate'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+      summary: user
+      tags:
+      - User
+swagger: "2.0"

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"ocr.service.authorization/app/middleware"
@@ -11,6 +13,8 @@ import (
 	"os"
 )
 
+// @title OCR AUTHORIZATION API
+// @version 1.0
 func main() {
 	port := os.Getenv("PORT")
 	router := gin.New()
@@ -40,6 +44,12 @@ func main() {
 		routerApiAuth.GET("/user/:user_id", userDelivery.GetByID)
 		//routerApiAuth.GET("/users", userDelivery.Gets)
 	}
+	// swagger
+	router.GET("/swagger/swagger.json", func(c *gin.Context) {
+		c.File("./docs/swagger.json")
+	})
+	url := ginSwagger.URL("/swagger/swagger.json") // The url pointing to API definition
+	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 	router.NoRoute(authMiddleware.MiddlewareFunc(), func(c *gin.Context) {
 		claims := jwt.ExtractClaims(c)
 		log.Printf("NoRoute claims: %#v\n", claims)

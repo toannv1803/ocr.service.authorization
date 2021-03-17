@@ -3,6 +3,7 @@ package UserDelivery
 import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/copier"
 	UserInterface "ocr.service.authorization/app/user/interface"
 	UserUsecase "ocr.service.authorization/app/user/usecase"
 	"ocr.service.authorization/config"
@@ -14,13 +15,23 @@ type userDelivery struct {
 	useCase     UserInterface.IUserUseCase
 }
 
+// @tags User
+// @Summary user
+// @Description create user
+// @start_time default
+// @Param body body model.UserCreate true "json"
+// @Success 200 {object} model.UserResponse	""
+// @Router /api/v1/register [post]
 func (q *userDelivery) Create(c *gin.Context) {
+	var userCreate model.UserCreate
 	var user model.User
-	err := c.BindJSON(&user)
+	var userResponse model.UserResponse
+	err := c.BindJSON(&userCreate)
 	if err != nil {
 		c.String(500, "can't parse body")
 	}
-	user, err = q.useCase.Create(user)
+	copier.Copy(&user, &userCreate)
+	userResponse, err = q.useCase.Create(user)
 	if err != nil {
 		if err.Error() == "username already exists" {
 			c.String(400, err.Error())
@@ -29,23 +40,35 @@ func (q *userDelivery) Create(c *gin.Context) {
 		c.String(500, err.Error())
 		return
 	}
-	c.JSON(200, user)
+	c.JSON(200, userResponse)
 }
 
+// @tags User
+// @Summary user
+// @Description create user
+// @start_time default
+// @Param user_id path string false "user id"
+// @Param Authorization header string false "'Bearer ' + token"
+// @Param body body model.UserUpdate true "json"
+// @Success 200 {object} model.UserResponse	""
+// @Router /api/v1/auth/user/{user_id} [post]
 func (q *userDelivery) UpdateByID(c *gin.Context) {
 	userId := c.Param("user_id")
+	var userUpdate model.UserUpdate
+	var user model.User
 	if userId == "" {
 		c.String(400, "require param user_id")
 	}
-	var user model.User
-	err := c.BindJSON(&user)
+	err := c.BindJSON(&userUpdate)
 	if err != nil {
 		c.String(500, "can't parse body")
 	}
+	copier.Copy(&user, &userUpdate)
 	err = q.useCase.Update(userId, user)
 	if err != nil {
 		c.String(500, "insert to db failed")
 	}
+	c.Writer.WriteHeader(200)
 }
 
 func (q *userDelivery) Gets(c *gin.Context) {
@@ -54,13 +77,21 @@ func (q *userDelivery) Gets(c *gin.Context) {
 	if err != nil {
 		c.String(500, "can't parse body")
 	}
-	user, err = q.useCase.GetByOwner(user)
+	userResponse, err := q.useCase.GetByOwner(user)
 	if err != nil {
 		c.String(500, err.Error())
 	}
-	c.JSON(200, user)
+	c.JSON(200, userResponse)
 }
 
+// @tags User
+// @Summary user
+// @Description create user
+// @start_time default
+// @Param user_id path string false "user id"
+// @Param Authorization header string false "'Bearer ' + token"
+// @Success 200 {object} model.UserResponse	""
+// @Router /api/v1/auth/user/{user_id} [get]
 func (q *userDelivery) GetByID(c *gin.Context) {
 	userId := c.Param("user_id")
 	if userId == "" {

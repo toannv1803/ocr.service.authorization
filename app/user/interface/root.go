@@ -14,8 +14,8 @@ type IUserDelivery interface {
 
 type IUserUseCase interface {
 	GetFull(user model.User) (model.User, error)
-	GetByOwner(user model.User) (model.User, error)
-	Create(user model.User) (model.User, error)
+	GetByOwner(user model.User) (model.UserResponse, error)
+	Create(user model.User) (model.UserResponse, error)
 	Update(idUser string, user model.User) error
 }
 

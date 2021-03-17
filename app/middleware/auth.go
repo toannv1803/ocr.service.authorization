@@ -13,6 +13,13 @@ import (
 	"time"
 )
 
+// @tags User
+// @Summary user login
+// @Description create user
+// @start_time default
+// @Param body body model.UserLogin true "json"
+// @Success 200 {object} model.LoginResponse ""
+// @Router /api/v1/login [post]
 func NewAuth() *jwt.GinJWTMiddleware {
 	CONFIG, _ := config.NewConfig(nil)
 	var identityKey = CONFIG.GetString("IDENTITY_KEY")
@@ -30,15 +37,13 @@ func NewAuth() *jwt.GinJWTMiddleware {
 		IdentityKey: identityKey,
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			fmt.Println("Authenticator")
-			var loginVals model.User
-			if err := c.ShouldBind(&loginVals); err != nil {
+			var userLogin model.UserLogin
+			if err := c.ShouldBind(&userLogin); err != nil {
 				return "", jwt.ErrMissingLoginValues
 			}
-			username := loginVals.Username
-			password := loginVals.Password
-			user, err := userUseCase.GetFull(model.User{Username: username})
+			user, err := userUseCase.GetFull(model.User{Username: userLogin.Username})
 			if err == nil && user.Status != "block" {
-				isRightPassword := salt.ComparePasswords(user.Password, []byte(password))
+				isRightPassword := salt.ComparePasswords(user.Password, []byte(userLogin.Password))
 				if isRightPassword {
 					user := model.User{
 						Id:       user.Id,
