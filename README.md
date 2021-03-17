@@ -39,7 +39,7 @@ MONGODB_PASSWORD=
 
 ## Docker
 ```bash
-docker build -t ocr.service.authorization .
+docker build -t ocr.service.authorization:1.0.0 .
 ```
 
 ## TEST (not yet)
