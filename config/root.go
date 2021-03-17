@@ -22,7 +22,6 @@ func (q Config) Refresh() {
 	q.viper.SetDefault("PASS", "admin")
 	q.viper.SetDefault("PUT_ALLOWED_IPS", []string{}) //[]string{"127.0.0.1/24", "10.0.0.1/24"}
 	q.viper.SetDefault("GET_ALLOWED_IPS", []string{})
-	q.viper.SetDefault("OBJECT_PATH", "/data/object")
 	q.viper.SetDefault("IDENTITY_KEY", "user_id")
 
 	q.viper.SetDefault("IMAGE_TASK_QUEUE", "orc.image-task")
