@@ -13,6 +13,7 @@ type User struct {
 }
 
 type UserCreate struct {
+	Id          string `json:"id,omitempty" bson:"id,omitempty" form:"id,omitempty"`
 	Username    string `json:"username,omitempty" bson:"username,omitempty" form:"username,omitempty"`
 	Password    string `json:"password,omitempty" bson:"password,omitempty" form:"password,omitempty"`
 	FullName    string `json:"full_name,omitempty" bson:"full_name,omitempty" form:"full_name,omitempty"`
@@ -21,6 +22,7 @@ type UserCreate struct {
 }
 
 type UserUpdate struct {
+	Id          string `json:"id,omitempty" bson:"id,omitempty" form:"id,omitempty"`
 	Password    string `json:"password,omitempty" bson:"password,omitempty" form:"password,omitempty"`
 	FullName    string `json:"full_name,omitempty" bson:"full_name,omitempty" form:"full_name,omitempty"`
 	Email       string `json:"email,omitempty" bson:"email,omitempty" form:"email,omitempty"`
@@ -28,6 +30,7 @@ type UserUpdate struct {
 }
 
 type UserResponse struct {
+	Id          string `json:"id,omitempty" bson:"id,omitempty" form:"id,omitempty"`
 	Username    string `json:"username,omitempty" bson:"username,omitempty" form:"username,omitempty"`
 	FullName    string `json:"full_name,omitempty" bson:"full_name,omitempty" form:"full_name,omitempty"`
 	Email       string `json:"email,omitempty" bson:"email,omitempty" form:"email,omitempty"`
@@ -36,6 +39,6 @@ type UserResponse struct {
 }
 
 type UserLogin struct {
-	Username    string `json:"username,omitempty" bson:"username,omitempty" form:"username,omitempty"`
-	Password    string `json:"password,omitempty" bson:"password,omitempty" form:"password,omitempty"`
+	Username string `json:"username,omitempty" bson:"username,omitempty" form:"username,omitempty"`
+	Password string `json:"password,omitempty" bson:"password,omitempty" form:"password,omitempty"`
 }

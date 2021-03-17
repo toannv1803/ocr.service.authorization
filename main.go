@@ -10,20 +10,17 @@ import (
 	"net/http"
 	"ocr.service.authorization/app/middleware"
 	UserDelivery "ocr.service.authorization/app/user/delivery"
+	"ocr.service.authorization/config"
 	"os"
 )
 
 // @title OCR AUTHORIZATION API
 // @version 1.0
 func main() {
-	port := os.Getenv("PORT")
+	CONFIG, _ := config.NewConfig(nil)
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
-
-	if port == "" {
-		port = "8000"
-	}
 
 	authMiddleware := middleware.NewAuth()
 	userDelivery, err := UserDelivery.NewUserDelivery()
@@ -55,8 +52,8 @@ func main() {
 		log.Printf("NoRoute claims: %#v\n", claims)
 		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
 	})
-	fmt.Println("listening", port)
-	if err := http.ListenAndServe(":"+port, router); err != nil {
+	fmt.Println("listening", CONFIG.GetString("NO_SSL_PORT"))
+	if err := http.ListenAndServe(":"+CONFIG.GetString("NO_SSL_PORT"), router); err != nil {
 		log.Fatal(err)
 	}
 }
