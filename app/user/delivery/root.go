@@ -50,7 +50,7 @@ func (q *userDelivery) Create(c *gin.Context) {
 // @Param user_id path string false "user id"
 // @Param Authorization header string false "'Bearer ' + token"
 // @Param body body model.UserUpdate true "json"
-// @Success 200 {object} model.UserResponse	""
+// @Success 200 {string} string	"ok"
 // @Router /api/v1/auth/user/{user_id} [post]
 func (q *userDelivery) UpdateByID(c *gin.Context) {
 	userId := c.Param("user_id")

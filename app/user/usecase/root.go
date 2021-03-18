@@ -45,7 +45,7 @@ func (q *userUseCase) GetFull(user model.User) (model.User, error) {
 func (q *userUseCase) Create(user model.User) (model.UserResponse, error) {
 	_uuid := uuid.New().String()
 	user.Id = _uuid
-	user.Roles = "user"
+	user.Role = "user"
 	user.Password = salt.HashAndSalt([]byte(user.Password))
 	user.CreateAt = time.Now().Format(time.RFC3339)
 	arrUser, err := q.repository.Get(model.User{Username: user.Username})

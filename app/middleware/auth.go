@@ -48,7 +48,7 @@ func NewAuth() *jwt.GinJWTMiddleware {
 					user := model.User{
 						Id:       user.Id,
 						Username: user.Username,
-						Roles:    user.Roles,
+						Role:    user.Role,
 					}
 					c.Set("user", user)
 					return &user, nil
@@ -61,7 +61,7 @@ func NewAuth() *jwt.GinJWTMiddleware {
 			if v, ok := data.(*model.User); ok {
 				return jwt.MapClaims{
 					identityKey: v.Id,
-					"roles":     v.Roles,
+					"role":     v.Role,
 				}
 			}
 			return jwt.MapClaims{}
@@ -83,12 +83,12 @@ func NewAuth() *jwt.GinJWTMiddleware {
 			claims := jwt.ExtractClaims(c)
 			return &model.User{
 				Id:    claims[identityKey].(string),
-				Roles: claims["roles"].(string),
+				Role: claims["role"].(string),
 			}
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
 			fmt.Println("Authorizator")
-			if v, ok := data.(*model.User); ok && (v.Roles == "user" || v.Roles == "admin") {
+			if v, ok := data.(*model.User); ok && (v.Role == "user" || v.Role == "admin") {
 				return true
 			}
 			return false

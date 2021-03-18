@@ -86,9 +86,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "ok",
                         "schema": {
-                            "$ref": "#/definitions/model.UserResponse"
+                            "type": "string"
                         }
                     }
                 }
@@ -178,6 +178,9 @@ var doc = `{
                 "full_name": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "string"
+                },
                 "password": {
                     "type": "string"
                 },
@@ -212,6 +215,9 @@ var doc = `{
                 "full_name": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "string"
+                },
                 "phone_number": {
                     "type": "string"
                 },
@@ -227,6 +233,9 @@ var doc = `{
                     "type": "string"
                 },
                 "full_name": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 },
                 "password": {

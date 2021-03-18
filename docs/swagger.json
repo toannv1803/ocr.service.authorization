@@ -68,9 +68,9 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "ok",
                         "schema": {
-                            "$ref": "#/definitions/model.UserResponse"
+                            "type": "string"
                         }
                     }
                 }
@@ -160,6 +160,9 @@
                 "full_name": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "string"
+                },
                 "password": {
                     "type": "string"
                 },
@@ -194,6 +197,9 @@
                 "full_name": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "string"
+                },
                 "phone_number": {
                     "type": "string"
                 },
@@ -209,6 +215,9 @@
                     "type": "string"
                 },
                 "full_name": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 },
                 "password": {

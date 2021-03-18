@@ -16,6 +16,8 @@ definitions:
         type: string
       full_name:
         type: string
+      id:
+        type: string
       password:
         type: string
       phone_number:
@@ -38,6 +40,8 @@ definitions:
         type: string
       full_name:
         type: string
+      id:
+        type: string
       phone_number:
         type: string
       username:
@@ -48,6 +52,8 @@ definitions:
       email:
         type: string
       full_name:
+        type: string
+      id:
         type: string
       password:
         type: string
@@ -99,9 +105,9 @@ paths:
           $ref: '#/definitions/model.UserUpdate'
       responses:
         "200":
-          description: OK
+          description: ok
           schema:
-            $ref: '#/definitions/model.UserResponse'
+            type: string
       summary: user
       tags:
       - User
