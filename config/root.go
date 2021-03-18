@@ -23,7 +23,8 @@ func (q Config) Refresh() {
 	q.viper.SetDefault("PUT_ALLOWED_IPS", []string{}) //[]string{"127.0.0.1/24", "10.0.0.1/24"}
 	q.viper.SetDefault("GET_ALLOWED_IPS", []string{})
 	q.viper.SetDefault("IDENTITY_KEY", "user_id")
-
+	q.viper.SetDefault("SECRET", "FB1QgTi33BoWQr6f")
+	
 	q.viper.SetDefault("IMAGE_TASK_QUEUE", "orc.image-task")
 	q.viper.SetDefault("IMAGE_SUCCESS_QUEUE", "orc.success")
 	q.viper.SetDefault("IMAGE_ERROR_QUEUE", "orc.error")

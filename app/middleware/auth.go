@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"encoding/json"
 	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -23,6 +24,7 @@ import (
 func NewAuth() *jwt.GinJWTMiddleware {
 	CONFIG, _ := config.NewConfig(nil)
 	var identityKey = CONFIG.GetString("IDENTITY_KEY")
+	var secret = CONFIG.GetString("SECRET")
 	userUseCase, err := UserUseCase.NewUserUseCase()
 	if err != nil {
 		fmt.Println(err)
@@ -31,7 +33,7 @@ func NewAuth() *jwt.GinJWTMiddleware {
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "test zone",
-		Key:         []byte("secret key"),
+		Key:         []byte(secret),
 		Timeout:     time.Hour,
 		MaxRefresh:  2 * time.Hour,
 		IdentityKey: identityKey,
@@ -48,7 +50,7 @@ func NewAuth() *jwt.GinJWTMiddleware {
 					user := model.User{
 						Id:       user.Id,
 						Username: user.Username,
-						Role:    user.Role,
+						Role:     user.Role,
 					}
 					c.Set("user", user)
 					return &user, nil
@@ -59,10 +61,10 @@ func NewAuth() *jwt.GinJWTMiddleware {
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			fmt.Println("PayloadFunc", data.(*model.User))
 			if v, ok := data.(*model.User); ok {
-				return jwt.MapClaims{
-					identityKey: v.Id,
-					"role":     v.Role,
-				}
+				var jwtClaim jwt.MapClaims
+				byteClaim, _ := json.Marshal(model.Claim{UserId: v.Id, Role: v.Role})
+				json.Unmarshal(byteClaim, &jwtClaim)
+				return jwtClaim
 			}
 			return jwt.MapClaims{}
 		},
@@ -81,14 +83,14 @@ func NewAuth() *jwt.GinJWTMiddleware {
 		IdentityHandler: func(c *gin.Context) interface{} {
 			fmt.Println("IdentityHandler")
 			claims := jwt.ExtractClaims(c)
-			return &model.User{
-				Id:    claims[identityKey].(string),
-				Role: claims["role"].(string),
+			return &model.Claim{
+				UserId: claims[identityKey].(string),
+				Role:   claims["role"].(string),
 			}
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
 			fmt.Println("Authorizator")
-			if v, ok := data.(*model.User); ok && (v.Role == "user" || v.Role == "admin") {
+			if v, ok := data.(*model.Claim); ok && (v.Role == "user" || v.Role == "admin") {
 				return true
 			}
 			return false

@@ -16,8 +16,6 @@ definitions:
         type: string
       full_name:
         type: string
-      id:
-        type: string
       password:
         type: string
       phone_number:
@@ -53,8 +51,6 @@ definitions:
         type: string
       full_name:
         type: string
-      id:
-        type: string
       password:
         type: string
       phone_number:
@@ -77,6 +73,7 @@ paths:
       - description: '''Bearer '' + token'
         in: header
         name: Authorization
+        required: true
         type: string
       responses:
         "200":
@@ -96,6 +93,7 @@ paths:
       - description: '''Bearer '' + token'
         in: header
         name: Authorization
+        required: true
         type: string
       - description: json
         in: body

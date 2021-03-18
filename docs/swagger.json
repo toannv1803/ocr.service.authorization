@@ -25,7 +25,8 @@
                         "type": "string",
                         "description": "'Bearer ' + token",
                         "name": "Authorization",
-                        "in": "header"
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -54,7 +55,8 @@
                         "type": "string",
                         "description": "'Bearer ' + token",
                         "name": "Authorization",
-                        "in": "header"
+                        "in": "header",
+                        "required": true
                     },
                     {
                         "description": "json",
@@ -160,9 +162,6 @@
                 "full_name": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string"
                 },
@@ -215,9 +214,6 @@
                     "type": "string"
                 },
                 "full_name": {
-                    "type": "string"
-                },
-                "id": {
                     "type": "string"
                 },
                 "password": {

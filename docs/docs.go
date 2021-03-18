@@ -43,7 +43,8 @@ var doc = `{
                         "type": "string",
                         "description": "'Bearer ' + token",
                         "name": "Authorization",
-                        "in": "header"
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -72,7 +73,8 @@ var doc = `{
                         "type": "string",
                         "description": "'Bearer ' + token",
                         "name": "Authorization",
-                        "in": "header"
+                        "in": "header",
+                        "required": true
                     },
                     {
                         "description": "json",
@@ -178,9 +180,6 @@ var doc = `{
                 "full_name": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string"
                 },
@@ -233,9 +232,6 @@ var doc = `{
                     "type": "string"
                 },
                 "full_name": {
-                    "type": "string"
-                },
-                "id": {
                     "type": "string"
                 },
                 "password": {
