@@ -19,7 +19,6 @@ var doc = `{
         "description": "{{.Description}}",
         "title": "{{.Title}}",
         "contact": {},
-        "license": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -37,7 +36,8 @@ var doc = `{
                         "type": "string",
                         "description": "user id",
                         "name": "user_id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -67,7 +67,8 @@ var doc = `{
                         "type": "string",
                         "description": "user id",
                         "name": "user_id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",

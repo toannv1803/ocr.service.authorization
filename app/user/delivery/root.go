@@ -47,7 +47,7 @@ func (q *userDelivery) Create(c *gin.Context) {
 // @Summary user
 // @Description create user
 // @start_time default
-// @Param user_id path string false "user id"
+// @Param user_id path string true "user id"
 // @Param Authorization header string true "'Bearer ' + token"
 // @Param body body model.UserUpdate true "json"
 // @Success 200 {string} string	"ok"
@@ -88,7 +88,7 @@ func (q *userDelivery) Gets(c *gin.Context) {
 // @Summary user
 // @Description create user
 // @start_time default
-// @Param user_id path string false "user id"
+// @Param user_id path string true "user id"
 // @Param Authorization header string true "'Bearer ' + token"
 // @Success 200 {object} model.UserResponse	""
 // @Router /api/v1/auth/user/{user_id} [get]

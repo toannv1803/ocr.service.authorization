@@ -58,7 +58,6 @@ definitions:
     type: object
 info:
   contact: {}
-  license: {}
   title: OCR AUTHORIZATION API
   version: "1.0"
 paths:
@@ -69,6 +68,7 @@ paths:
       - description: user id
         in: path
         name: user_id
+        required: true
         type: string
       - description: '''Bearer '' + token'
         in: header
@@ -89,6 +89,7 @@ paths:
       - description: user id
         in: path
         name: user_id
+        required: true
         type: string
       - description: '''Bearer '' + token'
         in: header

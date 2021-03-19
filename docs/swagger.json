@@ -3,7 +3,6 @@
     "info": {
         "title": "OCR AUTHORIZATION API",
         "contact": {},
-        "license": {},
         "version": "1.0"
     },
     "paths": {
@@ -19,7 +18,8 @@
                         "type": "string",
                         "description": "user id",
                         "name": "user_id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -49,7 +49,8 @@
                         "type": "string",
                         "description": "user id",
                         "name": "user_id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",
