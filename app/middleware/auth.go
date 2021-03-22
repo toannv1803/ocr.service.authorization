@@ -40,7 +40,7 @@ func NewAuth() *jwt.GinJWTMiddleware {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "test zone",
 		Key:         []byte(secret),
-		Timeout:     CONFIG.GetDuration("TOKEN_EXPIRE_TIME"),
+		Timeout:     CONFIG.GetDuration("TOKEN_EXPIRE_TIME") * time.Second,
 		MaxRefresh:  time.Minute,
 		IdentityKey: identityKey,
 		Authenticator: func(c *gin.Context) (interface{}, error) {
