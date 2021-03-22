@@ -10,13 +10,16 @@ type IUserDelivery interface {
 	UpdateByID(c *gin.Context)
 	Gets(c *gin.Context)
 	GetByID(c *gin.Context)
+	UpdatePassword(c *gin.Context)
 }
 
 type IUserUseCase interface {
 	GetFull(user model.User) (model.User, error)
 	GetByOwner(user model.User) (model.UserResponse, error)
 	Create(user model.User) (model.UserResponse, error)
-	Update(idUser string, user model.User) error
+	Update(idUser string, user model.UserUpdate) error
+	Login(userLogin model.UserLogin) (model.User, error)
+	UpdatePassword(userUpdatePassword model.UserUpdatePassword) error
 }
 
 type IUserRepository interface {

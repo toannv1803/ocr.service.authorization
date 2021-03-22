@@ -3,7 +3,9 @@ package config
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"strconv"
 	"strings"
+	"time"
 )
 
 type Config struct {
@@ -24,7 +26,9 @@ func (q Config) Refresh() {
 	q.viper.SetDefault("GET_ALLOWED_IPS", []string{})
 	q.viper.SetDefault("IDENTITY_KEY", "user_id")
 	q.viper.SetDefault("SECRET", "FB1QgTi33BoWQr6f")
-	
+	q.viper.SetDefault("TOKEN_EXPIRE_TIME", 1800*time.Second) // second
+	q.viper.SetDefault("LIMIT_CONCURRENT_LOGIN", 2)
+
 	q.viper.SetDefault("IMAGE_TASK_QUEUE", "orc.image-task")
 	q.viper.SetDefault("IMAGE_SUCCESS_QUEUE", "orc.success")
 	q.viper.SetDefault("IMAGE_ERROR_QUEUE", "orc.error")
@@ -66,6 +70,11 @@ func (q *Config) ReadFromEnvFile() {
 			switch k {
 			case "PUT_ALLOWED_IPS", "GET_ALLOWED_IPS":
 				q.viper.Set(k, strings.Split(viperENV.Get(k).(string), ","))
+			case "TOKEN_EXPIRE_TIME":
+				i, err := strconv.Atoi(viperENV.Get(k).(string))
+				if err == nil {
+					q.viper.Set(k, time.Duration(i))
+				}
 			default:
 				q.viper.Set(k, viperENV.Get(k))
 			}

@@ -2,21 +2,22 @@ package middleware
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"log"
 	UserUseCase "ocr.service.authorization/app/user/usecase"
+	UserLogUseCase "ocr.service.authorization/app/user_log/usecase"
 	"ocr.service.authorization/config"
 	"ocr.service.authorization/model"
-	"ocr.service.authorization/module/salt"
 	"os"
 	"time"
 )
 
 // @tags User
 // @Summary user login
-// @Description create user
+// @Description user login
 // @start_time default
 // @Param body body model.UserLogin true "json"
 // @Success 200 {object} model.LoginResponse ""
@@ -30,12 +31,17 @@ func NewAuth() *jwt.GinJWTMiddleware {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	userLogUseCase, err := UserLogUseCase.NewUserLogUseCase()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "test zone",
 		Key:         []byte(secret),
-		Timeout:     time.Hour,
-		MaxRefresh:  2 * time.Hour,
+		Timeout:     CONFIG.GetDuration("TOKEN_EXPIRE_TIME"),
+		MaxRefresh:  time.Minute,
 		IdentityKey: identityKey,
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			fmt.Println("Authenticator")
@@ -43,17 +49,31 @@ func NewAuth() *jwt.GinJWTMiddleware {
 			if err := c.ShouldBind(&userLogin); err != nil {
 				return "", jwt.ErrMissingLoginValues
 			}
-			user, err := userUseCase.GetFull(model.User{Username: userLogin.Username})
-			if err == nil && user.Status != "block" {
-				isRightPassword := salt.ComparePasswords(user.Password, []byte(userLogin.Password))
-				if isRightPassword {
-					user := model.User{
-						Id:       user.Id,
-						Username: user.Username,
-						Role:     user.Role,
+			user, err := userUseCase.Login(userLogin)
+			if err == nil {
+				userLog := model.UserLog{
+					UserId:      user.Id,
+					CreateAt:    time.Now().Format(time.RFC3339),
+					ExpiredTime: time.Now().Add(CONFIG.GetDuration("TOKEN_EXPIRE_TIME") * time.Second).Format(time.RFC3339),
+					Ip:          "",
+					Mac:         "",
+				}
+				isAllow, err := userLogUseCase.IsAllowLogin(user.Id)
+				if err == nil {
+					if isAllow {
+						err = userLogUseCase.Add(userLog)
+						user := model.User{
+							Id:       user.Id,
+							Username: user.Username,
+							Role:     user.Role,
+						}
+						c.Set("user", user)
+						return &user, nil
+					} else {
+						return nil, errors.New("limit concurrent user login")
 					}
-					c.Set("user", user)
-					return &user, nil
+				} else {
+					return nil, errors.New("server error")
 				}
 			}
 			return nil, jwt.ErrFailedAuthentication
@@ -97,10 +117,18 @@ func NewAuth() *jwt.GinJWTMiddleware {
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			fmt.Println("Unauthorized")
-			c.JSON(code, gin.H{
-				"code":    code,
-				"message": message,
-			})
+			switch message {
+			case "server error":
+				c.JSON(code, gin.H{
+					"code":    500,
+					"message": message,
+				})
+			default:
+				c.JSON(code, gin.H{
+					"code":    code,
+					"message": message,
+				})
+			}
 		},
 		// TokenLookup is a string in the form of "<source>:<name>" that is used
 		// to extract token from the request.

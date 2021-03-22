@@ -19,6 +19,7 @@ var doc = `{
         "description": "{{.Description}}",
         "title": "{{.Title}}",
         "contact": {},
+        "license": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -26,7 +27,7 @@ var doc = `{
     "paths": {
         "/api/v1/auth/user/{user_id}": {
             "get": {
-                "description": "create user",
+                "description": "get info user",
                 "tags": [
                     "User"
                 ],
@@ -57,7 +58,7 @@ var doc = `{
                 }
             },
             "post": {
-                "description": "create user",
+                "description": "update user",
                 "tags": [
                     "User"
                 ],
@@ -99,7 +100,7 @@ var doc = `{
         },
         "/api/v1/login": {
             "post": {
-                "description": "create user",
+                "description": "user login",
                 "tags": [
                     "User"
                 ],
@@ -148,6 +149,34 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.UserResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/reset_password": {
+            "post": {
+                "description": "update password user",
+                "tags": [
+                    "User"
+                ],
+                "summary": "user",
+                "parameters": [
+                    {
+                        "description": "json",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UserUpdatePassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -235,10 +264,21 @@ var doc = `{
                 "full_name": {
                     "type": "string"
                 },
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserUpdatePassword": {
+            "type": "object",
+            "properties": {
+                "new_password": {
+                    "type": "string"
+                },
                 "password": {
                     "type": "string"
                 },
-                "phone_number": {
+                "username": {
                     "type": "string"
                 }
             }

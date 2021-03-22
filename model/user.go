@@ -21,10 +21,15 @@ type UserCreate struct {
 }
 
 type UserUpdate struct {
-	Password    string `json:"password,omitempty" bson:"password,omitempty" form:"password,omitempty"`
 	FullName    string `json:"full_name,omitempty" bson:"full_name,omitempty" form:"full_name,omitempty"`
 	Email       string `json:"email,omitempty" bson:"email,omitempty" form:"email,omitempty"`
 	PhoneNumber string `json:"phone_number,omitempty" bson:"phone_number,omitempty" form:"phone_number,omitempty"`
+}
+
+type UserUpdatePassword struct {
+	Username    string `json:"username,omitempty" bson:"username,omitempty" form:"username,omitempty"`
+	Password    string `json:"password,omitempty" bson:"password,omitempty" form:"password,omitempty"`
+	NewPassword string `json:"new_password,omitempty" bson:"new_password,omitempty" form:"new_password,omitempty"`
 }
 
 type UserResponse struct {

@@ -28,7 +28,8 @@ func (q *userDelivery) Create(c *gin.Context) {
 	var userResponse model.UserResponse
 	err := c.BindJSON(&userCreate)
 	if err != nil {
-		c.String(500, "can't parse body")
+		c.String(400, "can't parse body")
+		return
 	}
 	copier.Copy(&user, &userCreate)
 	userResponse, err = q.useCase.Create(user)
@@ -45,7 +46,7 @@ func (q *userDelivery) Create(c *gin.Context) {
 
 // @tags User
 // @Summary user
-// @Description create user
+// @Description update user
 // @start_time default
 // @Param user_id path string true "user id"
 // @Param Authorization header string true "'Bearer ' + token"
@@ -55,18 +56,41 @@ func (q *userDelivery) Create(c *gin.Context) {
 func (q *userDelivery) UpdateByID(c *gin.Context) {
 	userId := c.Param("user_id")
 	var userUpdate model.UserUpdate
-	var user model.User
 	if userId == "" {
 		c.String(400, "require param user_id")
+		return
 	}
 	err := c.BindJSON(&userUpdate)
 	if err != nil {
-		c.String(500, "can't parse body")
+		c.String(400, "can't parse body")
+		return
 	}
-	copier.Copy(&user, &userUpdate)
-	err = q.useCase.Update(userId, user)
+	err = q.useCase.Update(userId, userUpdate)
 	if err != nil {
 		c.String(500, "insert to db failed")
+		return
+	}
+	c.Writer.WriteHeader(200)
+}
+
+// @tags User
+// @Summary user
+// @Description update password user
+// @start_time default
+// @Param body body model.UserUpdatePassword true "json"
+// @Success 200 {string} string	"ok"
+// @Router /api/v1/reset_password [post]
+func (q *userDelivery) UpdatePassword(c *gin.Context) {
+	var userUpdatePassword model.UserUpdatePassword
+	err := c.BindJSON(&userUpdatePassword)
+	if err != nil {
+		c.String(400, "can't parse body")
+		return
+	}
+	err = q.useCase.UpdatePassword(userUpdatePassword)
+	if err != nil {
+		c.String(400, err.Error())
+		return
 	}
 	c.Writer.WriteHeader(200)
 }
@@ -75,18 +99,20 @@ func (q *userDelivery) Gets(c *gin.Context) {
 	var user model.User
 	err := c.BindQuery(&user)
 	if err != nil {
-		c.String(500, "can't parse body")
+		c.String(400, "can't parse body")
+		return
 	}
 	userResponse, err := q.useCase.GetByOwner(user)
 	if err != nil {
 		c.String(500, err.Error())
+		return
 	}
 	c.JSON(200, userResponse)
 }
 
 // @tags User
 // @Summary user
-// @Description create user
+// @Description get info user
 // @start_time default
 // @Param user_id path string true "user id"
 // @Param Authorization header string true "'Bearer ' + token"
@@ -96,6 +122,7 @@ func (q *userDelivery) GetByID(c *gin.Context) {
 	userId := c.Param("user_id")
 	if userId == "" {
 		c.String(400, "require param user_id")
+		return
 	}
 	claims := jwt.ExtractClaims(c)
 	ownerID := claims[q.IdentityKey]
@@ -103,10 +130,13 @@ func (q *userDelivery) GetByID(c *gin.Context) {
 		user, err := q.useCase.GetByOwner(model.User{Id: userId})
 		if err != nil {
 			c.String(500, err.Error())
+			return
 		}
 		c.JSON(200, user)
+		return
 	} else {
 		c.String(401, "not allow")
+		return
 	}
 }
 

@@ -31,6 +31,7 @@ func main() {
 	routerApi := router.Group("/api/v1")
 	routerApi.POST("/register", userDelivery.Create)
 	routerApi.POST("/login", authMiddleware.LoginHandler)
+	routerApi.POST("/reset_password", userDelivery.UpdatePassword)
 
 	routerApiAuth := routerApi.Group("/auth")
 	// Refresh time can be longer than token timeout
