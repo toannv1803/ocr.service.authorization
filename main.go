@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -19,6 +20,7 @@ import (
 func main() {
 	CONFIG, _ := config.NewConfig(nil)
 	router := gin.New()
+	router.Use(cors.Default())
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
