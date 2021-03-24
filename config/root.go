@@ -26,7 +26,7 @@ func (q Config) Refresh() {
 	q.viper.SetDefault("GET_ALLOWED_IPS", []string{})
 	q.viper.SetDefault("IDENTITY_KEY", "user_id")
 	q.viper.SetDefault("SECRET", "FB1QgTi33BoWQr6f")
-	q.viper.SetDefault("TOKEN_EXPIRE_TIME", 1800*time.Second) // second
+	q.viper.SetDefault("TOKEN_EXPIRE_TIME", 1800) // second
 	q.viper.SetDefault("LIMIT_CONCURRENT_LOGIN", 2)
 
 	q.viper.SetDefault("IMAGE_TASK_QUEUE", "orc.image-task")
@@ -47,6 +47,7 @@ func (q Config) Refresh() {
 
 	q.viper.AutomaticEnv() // Read from os env
 	q.ReadFromEnvFile()
+	q.viper.Set("TOKEN_EXPIRE_TIME", q.viper.GetDuration("TOKEN_EXPIRE_TIME")*time.Second)
 }
 
 var viperENV = viper.New()
@@ -67,7 +68,7 @@ func (q *Config) ReadFromEnvFile() {
 			}
 		}
 		for _, k := range viperENV.AllKeys() {
-			switch k {
+			switch strings.ToUpper(k) {
 			case "PUT_ALLOWED_IPS", "GET_ALLOWED_IPS":
 				q.viper.Set(k, strings.Split(viperENV.Get(k).(string), ","))
 			case "TOKEN_EXPIRE_TIME":
