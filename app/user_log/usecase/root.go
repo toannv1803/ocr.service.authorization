@@ -1,9 +1,11 @@
 package UserLogUseCase
 
 import (
+	"errors"
 	"go.mongodb.org/mongo-driver/bson"
 	UserLogInterface "ocr.service.authorization/app/user_log/interface"
 	"ocr.service.authorization/config"
+	"ocr.service.authorization/enum"
 	"ocr.service.authorization/model"
 	"ocr.service.authorization/module/db"
 	"time"
@@ -25,7 +27,7 @@ func (q *userLogUseCase) Add(userLog model.UserLog) error {
 }
 
 func (q *userLogUseCase) IsAllowLogin(userId string) (bool, error) {
-	arrUserLog, err := q.Gets(userId, time.Now().Add(-q.expiredTime*time.Second))
+	arrUserLog, err := q.Gets(userId, time.Now().Add(-q.expiredTime))
 	if err != nil {
 		return false, err
 	}
@@ -35,7 +37,7 @@ func (q *userLogUseCase) IsAllowLogin(userId string) (bool, error) {
 		if err != nil {
 			return false, err
 		}
-		if time.Now().Before(expiredTime) { // chua het han
+		if time.Now().Before(expiredTime) && arrUserLog[i].Status == enum.UserLogStatusInit { // chua het han
 			countUnexpiredToken++
 		}
 	}
@@ -55,6 +57,14 @@ func (q *userLogUseCase) Gets(userId string, startTime time.Time) ([]model.UserL
 		},
 	}, &arrUserLog)
 	return arrUserLog, err
+}
+
+func (q *userLogUseCase) Update(filter model.UserLog, data model.UserLog) (int64, error) {
+	nModify, err := q.db.Update(filter, data)
+	if err != nil {
+		return 0, errors.New("update user_log failed")
+	}
+	return nModify, err
 }
 
 func NewUserLogUseCase() (UserLogInterface.IUserLogUseCase, error) {

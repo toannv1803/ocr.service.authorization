@@ -39,6 +39,7 @@ func main() {
 	routerApiAuth.GET("/refresh_token", authMiddleware.RefreshHandler)
 	routerApiAuth.Use(authMiddleware.MiddlewareFunc())
 	{
+		routerApiAuth.POST("/logout", authMiddleware.LogoutHandler)
 		routerApiAuth.POST("/user/:user_id", userDelivery.UpdateByID)
 		routerApiAuth.GET("/user/:user_id", userDelivery.GetByID)
 		//routerApiAuth.GET("/users", userDelivery.Gets)

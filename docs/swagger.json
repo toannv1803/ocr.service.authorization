@@ -7,6 +7,32 @@
         "version": "1.0"
     },
     "paths": {
+        "/api/v1/auth/logout": {
+            "post": {
+                "description": "user logout",
+                "tags": [
+                    "User"
+                ],
+                "summary": "user logout",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "'Bearer ' + token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/auth/user/{user_id}": {
             "get": {
                 "description": "get info user",

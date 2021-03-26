@@ -69,6 +69,23 @@ info:
   title: OCR AUTHORIZATION API
   version: "1.0"
 paths:
+  /api/v1/auth/logout:
+    post:
+      description: user logout
+      parameters:
+      - description: '''Bearer '' + token'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: user logout
+      tags:
+      - User
   /api/v1/auth/user/{user_id}:
     get:
       description: get info user

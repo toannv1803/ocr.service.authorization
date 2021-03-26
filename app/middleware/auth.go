@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -10,6 +9,7 @@ import (
 	UserUseCase "ocr.service.authorization/app/user/usecase"
 	UserLogUseCase "ocr.service.authorization/app/user_log/usecase"
 	"ocr.service.authorization/config"
+	"ocr.service.authorization/enum"
 	"ocr.service.authorization/model"
 	"os"
 	"time"
@@ -51,30 +51,13 @@ func NewAuth() *jwt.GinJWTMiddleware {
 			}
 			user, err := userUseCase.Login(userLogin)
 			if err == nil {
-				userLog := model.UserLog{
-					UserId:      user.Id,
-					CreateAt:    time.Now().Format(time.RFC3339),
-					ExpiredTime: time.Now().Add(CONFIG.GetDuration("TOKEN_EXPIRE_TIME")).Format(time.RFC3339),
-					Ip:          "",
-					Mac:         "",
+				user := model.User{
+					Id:       user.Id,
+					Username: user.Username,
+					Role:     user.Role,
 				}
-				isAllow, err := userLogUseCase.IsAllowLogin(user.Id)
-				if err == nil {
-					if isAllow {
-						err = userLogUseCase.Add(userLog)
-						user := model.User{
-							Id:       user.Id,
-							Username: user.Username,
-							Role:     user.Role,
-						}
-						c.Set("user", user)
-						return &user, nil
-					} else {
-						return nil, errors.New("limit concurrent user login")
-					}
-				} else {
-					return nil, errors.New("server error")
-				}
+				c.Set("user", user)
+				return &user, nil
 			}
 			return nil, jwt.ErrFailedAuthentication
 		},
@@ -91,14 +74,36 @@ func NewAuth() *jwt.GinJWTMiddleware {
 		LoginResponse: func(c *gin.Context, i int, s string, t time.Time) {
 			//claims := jwt.ExtractClaims(c)
 			//fmt.Println(claims)
-			user, _ := c.Get("user")
+			iUser, _ := c.Get("user")
+			user := iUser.(model.User)
 			var loginResponse = model.LoginResponse{
 				Code:   i,
 				Expire: t.Format(time.RFC3339),
 				Token:  s,
-				UserId: user.(model.User).Id,
+				UserId: user.Id,
 			}
-			c.JSON(i, loginResponse)
+			userLog := model.UserLog{
+				UserId:      user.Id,
+				CreateAt:    time.Now().Format(time.RFC3339),
+				ExpiredTime: t.Format(time.RFC3339),
+				Ip:          "",
+				Mac:         "",
+				Status:      enum.UserLogStatusInit,
+			}
+			isAllow, err := userLogUseCase.IsAllowLogin(user.Id)
+			if err == nil {
+				if isAllow {
+					err = userLogUseCase.Add(userLog)
+					c.JSON(i, loginResponse)
+					return
+				} else {
+					c.String(401, "limit concurrent user login")
+					return
+				}
+			} else {
+				c.String(500, "check failed")
+				return
+			}
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			fmt.Println("IdentityHandler")
@@ -147,6 +152,13 @@ func NewAuth() *jwt.GinJWTMiddleware {
 
 		// TimeFunc provides the current time. You can override it to use another time value. This is useful for testing or if your server uses a different time zone than your tokens.
 		TimeFunc: time.Now,
+		LogoutResponse: func(c *gin.Context, i int) {
+			claims := jwt.ExtractClaims(c)
+			fmt.Println("----", claims)
+			exp := time.Unix(int64(claims["exp"].(float64)), 0).Format(time.RFC3339)
+			userLogUseCase.Update(model.UserLog{Status: enum.UserLogStatusInit, ExpiredTime: exp}, model.UserLog{Status: enum.UserLogStatusDone})
+			c.Writer.WriteHeader(i)
+		},
 	})
 
 	if err != nil {
@@ -161,4 +173,15 @@ func NewAuth() *jwt.GinJWTMiddleware {
 		log.Fatal("authMiddleware.MiddlewareInit() Error:" + errInit.Error())
 	}
 	return authMiddleware
+}
+
+// @tags User
+// @Summary user logout
+// @Description user logout
+// @start_time default
+// @Param Authorization header string true "'Bearer ' + token"
+// @Success 200 {string} string	""
+// @Router /api/v1/auth/logout [post]
+func ABC() {
+
 }
